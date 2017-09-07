@@ -189,6 +189,64 @@ Transform:
   m_PrefabParentObject: {fileID: 4470345212222798, guid: 5c280be06badf0b43a8aff01df90689d,
     type: 2}
   m_PrefabInternal: {fileID: 191532309}
+--- !u!1 &228362884
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 228362886}
+  - component: {fileID: 228362887}
+  - component: {fileID: 228362885}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &228362885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 228362884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5555a5c2ec6dfc947a1df0c4797bb7cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  columns: 8
+  rows: 8
+  number: 10
+  clueTiles: []
+  blankTile: {fileID: 1134623476719706, guid: f4d29921826e2ec438566e0ce69fd9d8, type: 2}
+  mineTile: {fileID: 1623949818536884, guid: 9e5eb6f2f64e72148987cd44366673aa, type: 2}
+--- !u!4 &228362886
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 228362884}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.063964844}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &228362887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 228362884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16eaaac8db8631d43a879857e18bdfb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &347478683
 Prefab:
   m_ObjectHideFlags: 0
@@ -663,6 +721,10 @@ Prefab:
         type: 2}
       propertyPath: m_SortingLayer
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1600613993674216, guid: fa9872d9b3aa79d419535d5a97f7313b, type: 2}
+      propertyPath: m_TagString
+      value: Reset
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: fa9872d9b3aa79d419535d5a97f7313b, type: 2}

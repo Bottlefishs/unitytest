@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Clue
+  - Reset
   layers:
   - Default
   - TransparentFX
@@ -43,6 +45,9 @@ TagManager:
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Block
+    uniqueID: 2577177677
     locked: 0
   - name: Top
     uniqueID: 3192774505
