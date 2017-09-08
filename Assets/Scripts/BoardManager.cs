@@ -75,9 +75,17 @@ public class BoardManager : MonoBehaviour
             {
                 
                GameObject instance = Instantiate(blankTile, new Vector3(x*tileSize.x, y*tileSize.y, 0f), Quaternion.identity) as GameObject;
-
+        
                 instance.transform.SetParent(boardHolder);
             }
+        }
+
+        for (int i = 0; i < number; i++)
+        {
+            Vector3 randomPosition = RandomPosition();
+            GameObject instance = Instantiate(mineTile, randomPosition, Quaternion.identity);
+
+            instance.transform.SetParent(boardHolder);
         }
     }
 
@@ -89,22 +97,12 @@ public class BoardManager : MonoBehaviour
         return randomPosition;
     }
 
-    void LayoutMinesAtRandom()
-    {
-        
-
-        for (int i = 0; i < number; i++)
-        {
-            Vector3 randomPosition = RandomPosition();
-            Instantiate(mineTile, randomPosition, Quaternion.identity);
-        }
-    }
-
     public void SetupScene()
     {
-        BoardSetup();
         InitialiseList();
-        LayoutMinesAtRandom();
+        BoardSetup();
+        
+        //LayoutMinesAtRandom();
     }
 
 
@@ -112,6 +110,19 @@ public class BoardManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //boardHolder = GameObject.Find("board").transform;
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0); // get first touch since touch count is greater than zero
 
+            if (touch.phase == TouchPhase.Stationary || touch.phase == TouchPhase.Moved)
+            {
+                // get the touch position from the screen touch to world point
+                Vector3 touchedPos = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, 10));
+                // lerp and set the position of the current object to that of the touch, but smoothly over time.
+                boardHolder.position += Vector3.Lerp(transform.position, touchedPos, Time.deltaTime);
+
+            }
+        }
     }
 }
