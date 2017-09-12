@@ -68,15 +68,14 @@ public class BoardManager : MonoBehaviour
 
     void BoardSetup()
     {
-        boardHolder = new GameObject("Board").transform;
+        boardHolder = GameObject.Find("Board").transform;
         for (int x = 0; x < columns ; x++)
         {
             for (int y = 0; y < rows ; y++)
             {
-                
+                               
                GameObject instance = Instantiate(blankTile, new Vector3(x*tileSize.x, y*tileSize.y, 0f), Quaternion.identity) as GameObject;
-        
-                instance.transform.SetParent(boardHolder);
+               instance.transform.SetParent(boardHolder);
             }
         }
 
@@ -87,6 +86,8 @@ public class BoardManager : MonoBehaviour
 
             instance.transform.SetParent(boardHolder);
         }
+        Camera camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+        boardHolder.position = camera.ScreenToWorldPoint(new Vector3(0f,0f,0f))+new Vector3(tileSize.x/2,tileSize.y/2,1f);
     }
 
     Vector3 RandomPosition()
@@ -106,23 +107,10 @@ public class BoardManager : MonoBehaviour
     }
 
 
- 
+
     // Update is called once per frame
     void Update()
     {
-        //boardHolder = GameObject.Find("board").transform;
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0); // get first touch since touch count is greater than zero
-
-            if (touch.phase == TouchPhase.Stationary || touch.phase == TouchPhase.Moved)
-            {
-                // get the touch position from the screen touch to world point
-                Vector3 touchedPos = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, 10));
-                // lerp and set the position of the current object to that of the touch, but smoothly over time.
-                boardHolder.position += Vector3.Lerp(transform.position, touchedPos, Time.deltaTime);
-
-            }
-        }
     }
+ 
 }
