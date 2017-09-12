@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TouchScript : MonoBehaviour
 {
-    Transform boardHolder;
+    GameObject board;
     private bool draggingItem = false;
     private GameObject draggedObject;
     private Vector2 touchOffset;
@@ -35,8 +35,9 @@ public class TouchScript : MonoBehaviour
         }
     }
 
-    private void DragOrPickUp()
+    private void DragBoard()
     {
+        board = GameObject.Find("Board");
         var inputPosition = CurrentTouchPosition;
         if (draggingItem)
         {
@@ -44,19 +45,24 @@ public class TouchScript : MonoBehaviour
         }
         else
         {
-            RaycastHit2D[] objectsHit = Physics2D.RaycastAll(inputPosition, inputPosition, 50f);
-            if (objectsHit.Length > 0)
-            {
-                var hit = objectsHit[0];
-                if (hit.transform != null)
-                {
-                    draggingItem = true;
-                    draggedObject = hit.transform.gameObject;
-                    touchOffset = (Vector2)hit.transform.position - inputPosition;
-                    //draggedObject.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
-                }
-
-            }
+            // this always runs before the first if so dragged object will be defined
+            //RaycastHit2D[] objectsHit = Physics2D.RaycastAll(inputPosition, inputPosition, 50f);
+            //if (objectsHit.Length > 0)
+            //{
+            //    var hit = objectsHit[0];
+            //    if (hit.transform != null)
+            //    {
+            //        draggingItem = true;
+            //        
+            //        draggedObject = hit.transform.gameObject;
+            //        touchOffset = (Vector2)hit.transform.position - inputPosition;
+            //        //draggedObject.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
+            //    }
+            //
+            //}
+            draggingItem = true;
+            draggedObject = board;
+            touchOffset = (Vector2)board.transform.position - inputPosition;
         }
     }
 
@@ -89,7 +95,7 @@ public class TouchScript : MonoBehaviour
     {
         if (HasInput)
         {
-            DragOrPickUp();
+            DragBoard();
         }
         else
         {
