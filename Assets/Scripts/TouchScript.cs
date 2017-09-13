@@ -9,6 +9,9 @@ public class TouchScript : MonoBehaviour
     private GameObject draggedObject;
     private Vector2 touchOffset;
     Touch firstTouch;
+    private int touchState;
+    private Animator blankBlockAnimator;
+    
 
     // Use this for initialization
     void Start()
@@ -72,48 +75,120 @@ public class TouchScript : MonoBehaviour
     }
 
 
+    float acumTime;
+    float holdTime;
+    float moveThreshold=1f;
+    int IsTapDragOrPress()
+    {
+        // once a touch is determined as tap drag or press it cant be anything else again
+        holdTime = 0.5f;
+        firstTouch = Input.GetTouch(0);
 
-    //bool IsTap() {
-    //    if (firstTouch.phase == TouchPhase.Began) {
-    //        TouchTime = Time.time;​
-    //    }
-    //
-    //    if (firstTouch.phase == TouchPhase.Ended || firstTouch.phase == TouchPhase.Canceled)
-    //    {
-    //        if (Time.time - TouchTime <= 0.5)
-    //        {
-    //            return true;
-    //        }
-    //        else
-    //        {
-    //            return false;
-    //        }​
-    //    }
-    //}
-    // Update is called once per frame
+        if (firstTouch.phase == TouchPhase.Moved&& Mathf.Abs(firstTouch.deltaPosition.x) > moveThreshold && Mathf.Abs(firstTouch.deltaPosition.y) > moveThreshold)
+        {
+            //Debug.Log("im dragging");
+            touchState = 2;
+            
+        }
+        else
+        {
+            if (acumTime >= holdTime)
+            {
+                //evaluate if touch has moved
+                //TODO CHANGE ACCUMILATE TIME TO IT'S OWN FUNCTION?
+                //if (Input.GetTouch(0).phase == TouchPhase.Ended)
+                //{
+                //
+                //    acumTime = 0;
+                //}
+                //Debug.Log("Im long pressing");
+                touchState = 3;
+            }
+            else
+            {
+
+                if (Input.GetTouch(0).phase == TouchPhase.Ended)
+                {
+                   acumTime = 0;
+                   touchState = 1;
+                   //Debug.Log("im tapping");
+                   
+                }
+            }
+        }
+        return touchState;
+    }
+    float AccuminlateTime()
+    {
+        acumTime += Input.GetTouch(0).deltaTime;
+        return acumTime;
+    }
+
+    void ResetTime()
+    {
+        acumTime = 0;
+    }
+
+    //Update is called once per frame
+    void BlankBlockAnimation(int touchState_)
+    {
+        if (touchState_ != 0)
+        {
+            var inputPosition = CurrentTouchPosition;
+            RaycastHit2D[] objectsHit = Physics2D.RaycastAll(inputPosition, inputPosition, 1f);
+            var hit = objectsHit[0];
+            blankBlockAnimator = hit.transform.gameObject.GetComponent<Animator>();
+            if (touchState_ == 1)
+            {
+                blankBlockAnimator.SetBool("TempClick", true);
+            }
+            else if (touchState_ == 3)
+            {
+                blankBlockAnimator.SetBool("HoldClick", true);
+            }
+        }
+    }
     void Update()
     {
         if (HasInput)
         {
-            DragBoard();
+            AccuminlateTime();
+            if (touchState == 0)
+            {
+                IsTapDragOrPress(); //assign touchState to a value
+                if (touchState == 1)
+                {
+                    BlankBlockAnimation(touchState);
+                    //insert animator
+                    Debug.Log("tapped once");
+                }
+                if (touchState == 3)
+                {
+                    //insert animator
+                    Debug.Log("long pressed once");
+                }
+                BlankBlockAnimation(touchState);
+            }
+            
+            if (touchState == 2)
+            {
+                Debug.Log("im dragging");
+                DragBoard();
+            }
+            
         }
         else
         {
             if (draggingItem) DropItem();
+            if (touchState != 0)
+            {
+                touchState = 0;
+                blankBlockAnimator.SetBool("TempClick", false);
+                blankBlockAnimator.SetBool("HoldClick", false);
+                //TODO stop trigger on animation so it stops looping
+            }
+                
+            if (acumTime!=0)ResetTime();
         }
-        //boardHolder = GameObject.Find("board").transform;
-        //if (Input.touchCount > 0)
-        //{
-        //    Touch touch = Input.GetTouch(0); // get first touch since touch count is greater than zero
-        //
-        //    if (touch.phase == TouchPhase.Stationary || touch.phase == TouchPhase.Moved)
-        //    {
-        //        // get the touch position from the screen touch to world point
-        //        Vector3 touchedPos = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, 10));
-        //        // lerp and set the position of the current object to that of the touch, but smoothly over time.
-        //        boardHolder.position += Vector3.Lerp(transform.position, touchedPos, Time.deltaTime);
-        //
-        //    }
-        //}
     }
 }

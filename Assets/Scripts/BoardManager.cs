@@ -52,7 +52,6 @@ public class BoardManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        
     }
 
     void InitialiseList()
@@ -101,6 +100,7 @@ public class BoardManager : MonoBehaviour
     public void SetupScene()
     {
         InitialiseList();
+        //TODO make it so it only initialises on the first tap and have to 
         BoardSetup();
         
         //LayoutMinesAtRandom();
