@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class TouchScript : MonoBehaviour
 {
     GameObject board;
@@ -11,7 +12,70 @@ public class TouchScript : MonoBehaviour
     Touch firstTouch;
     private int touchState;
     private Animator blankBlockAnimator;
-    
+
+
+    #region VibrateBlackbox
+    public static class Vibration
+    {
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+    public static AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+    public static AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+    public static AndroidJavaObject vibrator = currentActivity.Call<AndroidJavaObject>("getSystemService", "vibrator");
+#else
+        public static AndroidJavaClass unityPlayer;
+        public static AndroidJavaObject currentActivity;
+        public static AndroidJavaObject vibrator;
+#endif
+
+        public static void Vibrate()
+        {
+            if (isAndroid())
+                vibrator.Call("vibrate");
+            else
+                Handheld.Vibrate();
+        }
+
+
+        public static void Vibrate(long milliseconds)
+        {
+            if (isAndroid())
+                vibrator.Call("vibrate", milliseconds);
+            else
+                Handheld.Vibrate();
+        }
+
+        public static void Vibrate(long[] pattern, int repeat)
+        {
+            if (isAndroid())
+                vibrator.Call("vibrate", pattern, repeat);
+            else
+                Handheld.Vibrate();
+        }
+
+        public static bool HasVibrator()
+        {
+            return isAndroid();
+        }
+
+        public static void Cancel()
+        {
+            if (isAndroid())
+                vibrator.Call("cancel");
+        }
+
+        private static bool isAndroid()
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+	return true;
+#else
+            return false;
+#endif
+        }
+    }
+
+    #endregion
+
 
     // Use this for initialization
     void Start()
@@ -144,7 +208,21 @@ public class TouchScript : MonoBehaviour
             }
             else if (touchState_ == 3)
             {
-                blankBlockAnimator.SetBool("HoldClick", true);
+                //Vibration.Vibrate(500);
+                Handheld.Vibrate();
+                switch (blankBlockAnimator.GetInteger("HoldClick"))
+                {
+                    case 3:
+                        blankBlockAnimator.SetInteger("HoldClick", 1);
+                        break;
+                    case 1:
+                        blankBlockAnimator.SetInteger("HoldClick", 2);
+                        break;
+                    case 2:
+                        blankBlockAnimator.SetInteger("HoldClick", 3);
+                        break;
+                }
+                
             }
         }
     }
@@ -179,13 +257,11 @@ public class TouchScript : MonoBehaviour
         }
         else
         {
-            if (draggingItem) DropItem();
+            if (draggingItem) DropItem();// sets draggingitem to false and stops the loop
             if (touchState != 0)
             {
                 touchState = 0;
                 blankBlockAnimator.SetBool("TempClick", false);
-                blankBlockAnimator.SetBool("HoldClick", false);
-                //TODO stop trigger on animation so it stops looping
             }
                 
             if (acumTime!=0)ResetTime();
