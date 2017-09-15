@@ -12,13 +12,18 @@ public class TouchScript : MonoBehaviour
     Touch firstTouch;
     private int touchState;
     private Animator blankBlockAnimator;
+    float acumTime;
+    float holdTime;
+    float moveThreshold = 1.5f;
+    bool isitfirstBlock=true;
+    private BoardManager boardScript;
 
 
     #region VibrateBlackbox
     public static class Vibration
     {
 
-#if UNITY_ANDROID && !UNITY_EDITOR
+#if (UNITY_ANDROID && !UNITY_EDITOR)
     public static AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
     public static AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
     public static AndroidJavaObject vibrator = currentActivity.Call<AndroidJavaObject>("getSystemService", "vibrator");
@@ -66,7 +71,7 @@ public class TouchScript : MonoBehaviour
 
         private static bool isAndroid()
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+#if (UNITY_ANDROID && !UNITY_EDITOR)
 	return true;
 #else
             return false;
@@ -139,9 +144,7 @@ public class TouchScript : MonoBehaviour
     }
 
 
-    float acumTime;
-    float holdTime;
-    float moveThreshold=1f;
+  
     int IsTapDragOrPress()
     {
         // once a touch is determined as tap drag or press it cant be anything else again
@@ -158,14 +161,6 @@ public class TouchScript : MonoBehaviour
         {
             if (acumTime >= holdTime)
             {
-                //evaluate if touch has moved
-                //TODO CHANGE ACCUMILATE TIME TO IT'S OWN FUNCTION?
-                //if (Input.GetTouch(0).phase == TouchPhase.Ended)
-                //{
-                //
-                //    acumTime = 0;
-                //}
-                //Debug.Log("Im long pressing");
                 touchState = 3;
             }
             else
@@ -173,9 +168,8 @@ public class TouchScript : MonoBehaviour
 
                 if (Input.GetTouch(0).phase == TouchPhase.Ended)
                 {
-                   acumTime = 0;
+                   ResetTime();
                    touchState = 1;
-                   //Debug.Log("im tapping");
                    
                 }
             }
@@ -192,24 +186,36 @@ public class TouchScript : MonoBehaviour
     {
         acumTime = 0;
     }
+    RaycastHit2D[] RaycastObjectsTouched()
+    {
+        var inputPosition = CurrentTouchPosition;
+        RaycastHit2D[] objectsHit = Physics2D.RaycastAll(inputPosition, inputPosition, 1f);
+        return objectsHit;
 
+    }
     //Update is called once per frame
-    void BlankBlockAnimation(int touchState_)
+    void BlankBlockAnimation(int touchState_)// returns array of objects hit
     {
         if (touchState_ != 0)
         {
-            var inputPosition = CurrentTouchPosition;
-            RaycastHit2D[] objectsHit = Physics2D.RaycastAll(inputPosition, inputPosition, 1f);
-            var hit = objectsHit[0];
+            var hit =RaycastObjectsTouched()[0];
+            
             blankBlockAnimator = hit.transform.gameObject.GetComponent<Animator>();
             if (touchState_ == 1)
             {
+
+                //if (isitfirstBlock)
+                //{
+                //    boardScript = GetComponent<BoardManager>();
+                //    boardScript.LayoutMines(10, hit.transform.position);// TODO add from GUI text shouldnt be here anyway
+                //    isitfirstBlock=false;
+                //}
                 blankBlockAnimator.SetBool("TempClick", true);
             }
             else if (touchState_ == 3)
             {
                 //Vibration.Vibrate(500);
-                Handheld.Vibrate();
+                //Handheld.Vibrate();
                 switch (blankBlockAnimator.GetInteger("HoldClick"))
                 {
                     case 3:
@@ -231,19 +237,16 @@ public class TouchScript : MonoBehaviour
         if (HasInput)
         {
             AccuminlateTime();
-            if (touchState == 0)
+            if (touchState == 0 || touchState==1)// check if touch started or it's a tap (not yet anything else)
             {
                 IsTapDragOrPress(); //assign touchState to a value
-                if (touchState == 1)
+                if (isitfirstBlock)
                 {
-                    BlankBlockAnimation(touchState);
-                    //insert animator
-                    Debug.Log("tapped once");
-                }
-                if (touchState == 3)
-                {
-                    //insert animator
-                    Debug.Log("long pressed once");
+                    
+                    boardScript = GetComponent<BoardManager>();
+                    boardScript.InitialiseList();
+                    boardScript.LayoutMines(10);// TODO add from GUI text
+                    isitfirstBlock = false;
                 }
                 BlankBlockAnimation(touchState);
             }

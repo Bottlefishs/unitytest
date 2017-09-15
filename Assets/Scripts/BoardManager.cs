@@ -33,12 +33,11 @@ public class BoardManager : MonoBehaviour
 
     public int columns = 10;
     public int rows = 10;
-    public int number = 10;
     public GameObject[] clueTiles; //0 to 8, 9 elements
     public GameObject blankTile;
     public GameObject mineTile;
     private Transform boardHolder;
-    private List<Vector3> gridPositions = new List<Vector3>();
+    public List<Vector3> gridPositions = new List<Vector3>();
 
     public Vector3 tileSize
     {
@@ -53,8 +52,12 @@ public class BoardManager : MonoBehaviour
     void Start()
     {
     }
+    void Awake()
+    {
 
-    void InitialiseList()
+    }
+
+    public void InitialiseList()//TODO  dont make public later
     {
         for (int x = 0; x < columns; x++)
         {
@@ -64,32 +67,57 @@ public class BoardManager : MonoBehaviour
             }
         }
     }
-
-    void BoardSetup()
+    public void InitialiseList(float xPos, float yPos)
     {
-        boardHolder = GameObject.Find("Board").transform;
-        for (int x = 0; x < columns ; x++)
+        List<Vector3> gridPositions = new List<Vector3>();
+        List<Vector3> skipPositions = new List<Vector3>();
+        for (float x = xPos; x < xPos + 1; x++)         //not too sure what's going on here
+        {                                          //not too sure what's going on here
+                                                   //not too sure what's going on here
+            for (float y = yPos; y < yPos + 1; y++)        //not too sure what's going on here
+            {                                      //not too sure what's going on here
+                                                   //not too sure what's going on here
+            }                                      //not too sure what's going on here
+        }
+        for (int x = 0; x < columns; x++)
         {
-            for (int y = 0; y < rows ; y++)
+
+            for (int y = 0; y < rows; y++)
             {
-                               
-               GameObject instance = Instantiate(blankTile, new Vector3(x*tileSize.x, y*tileSize.y, 0f), Quaternion.identity) as GameObject;
-               instance.transform.SetParent(boardHolder);
+                Vector3 current = new Vector3(x * tileSize.x, y * tileSize.y, 0f);
+                if (!skipPositions.Contains(current))
+                {
+                    gridPositions.Add(new Vector3(x * tileSize.x, y * tileSize.y, 0f));
+                }
             }
         }
 
-        for (int i = 0; i < number; i++)
-        {
-            Vector3 randomPosition = RandomPosition();
-            GameObject instance = Instantiate(mineTile, randomPosition, Quaternion.identity);
-
-            instance.transform.SetParent(boardHolder);
+    }
+    void BoardSetup() //board is the blank blocks
+    {
+        boardHolder = GameObject.Find("Board").transform;
+        for (int i = 0; i < gridPositions.Count ; i++)
+        {             
+               GameObject instance = Instantiate(blankTile, gridPositions[i], Quaternion.identity) as GameObject;
+               instance.transform.SetParent(boardHolder);
         }
         Camera camera = GameObject.Find("Main Camera").GetComponent<Camera>();
         boardHolder.position = camera.ScreenToWorldPoint(new Vector3(0f,0f,0f))+new Vector3(tileSize.x/2,tileSize.y/2,1f);
     }
 
-    Vector3 RandomPosition()
+    public void LayoutMines(int number)
+    {
+        Vector3 currentBoardPosition = boardHolder.position;
+        for (int i = 0; i < number; i++)
+        {
+            Vector3 randomPosition = RandomPosition();
+            GameObject instance = Instantiate(mineTile, randomPosition+currentBoardPosition, Quaternion.identity); // add offset to boardholder position
+
+            instance.transform.SetParent(boardHolder);
+        }
+    }
+
+    Vector3 RandomPosition() //gives you a random position and removes from the list to make sure it doesn't repeat
     {
         int randomIndex = Random.Range(0, gridPositions.Count);
         Vector3 randomPosition = gridPositions[randomIndex];
@@ -103,7 +131,7 @@ public class BoardManager : MonoBehaviour
         //TODO make it so it only initialises on the first tap and have to 
         BoardSetup();
         
-        //LayoutMinesAtRandom();
+
     }
 
 

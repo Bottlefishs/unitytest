@@ -195,7 +195,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4470345212222798, guid: 5c280be06badf0b43a8aff01df90689d, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 0.42270744
+      value: -0.06729251
       objectReference: {fileID: 0}
     - target: {fileID: 4470345212222798, guid: 5c280be06badf0b43a8aff01df90689d, type: 2}
       propertyPath: m_LocalPosition.z
@@ -435,7 +435,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4470345212222798, guid: 5c280be06badf0b43a8aff01df90689d, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 0.42270744
+      value: -0.06729251
       objectReference: {fileID: 0}
     - target: {fileID: 4470345212222798, guid: 5c280be06badf0b43a8aff01df90689d, type: 2}
       propertyPath: m_LocalPosition.z
@@ -885,7 +885,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4470345212222798, guid: 5c280be06badf0b43a8aff01df90689d, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 0.42270744
+      value: -0.06729251
       objectReference: {fileID: 0}
     - target: {fileID: 4470345212222798, guid: 5c280be06badf0b43a8aff01df90689d, type: 2}
       propertyPath: m_LocalPosition.z
@@ -981,7 +981,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4470345212222798, guid: 5c280be06badf0b43a8aff01df90689d, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 0.42270744
+      value: -0.06729251
       objectReference: {fileID: 0}
     - target: {fileID: 4470345212222798, guid: 5c280be06badf0b43a8aff01df90689d, type: 2}
       propertyPath: m_LocalPosition.z
@@ -1096,7 +1096,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wireColor: {r: 1, g: 1, b: 1, a: 1}
-  UnitsSize: 4
+  UnitsSize: 3
   constraint: 1
   camera: {fileID: 1147085273}
 --- !u!81 &1147085270
@@ -1140,7 +1140,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 2
+  orthographic size: 1.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1182,7 +1182,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4262172962066312, guid: fa9872d9b3aa79d419535d5a97f7313b, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 1.333
+      value: 0.843
       objectReference: {fileID: 0}
     - target: {fileID: 4262172962066312, guid: fa9872d9b3aa79d419535d5a97f7313b, type: 2}
       propertyPath: m_LocalPosition.z
@@ -1481,7 +1481,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.079, y: 1.388}
+  m_AnchoredPosition: {x: -0.07899997, y: 0.8980001}
   m_SizeDelta: {x: 1.7, y: 0.83}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1943474800
@@ -1567,7 +1567,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4470345212222798, guid: 5c280be06badf0b43a8aff01df90689d, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 0.42270744
+      value: -0.06729251
       objectReference: {fileID: 0}
     - target: {fileID: 4470345212222798, guid: 5c280be06badf0b43a8aff01df90689d, type: 2}
       propertyPath: m_LocalPosition.z
