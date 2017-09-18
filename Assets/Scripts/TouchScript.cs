@@ -14,10 +14,10 @@ public class TouchScript : MonoBehaviour
     private Animator blankBlockAnimator;
     float acumTime;
     float holdTime;
-    float moveThreshold = 1.5f;
+    float moveThreshold = 2f;
     bool isitfirstBlock=true;
     private BoardManager boardScript;
-
+    private RaycastHit2D blockHit;
 
     #region VibrateBlackbox
     public static class Vibration
@@ -148,7 +148,7 @@ public class TouchScript : MonoBehaviour
     int IsTapDragOrPress()
     {
         // once a touch is determined as tap drag or press it cant be anything else again
-        holdTime = 0.5f;
+        holdTime = 0.4f;
         firstTouch = Input.GetTouch(0);
 
         if (firstTouch.phase == TouchPhase.Moved&& Mathf.Abs(firstTouch.deltaPosition.x) > moveThreshold && Mathf.Abs(firstTouch.deltaPosition.y) > moveThreshold)
@@ -165,12 +165,12 @@ public class TouchScript : MonoBehaviour
             }
             else
             {
-
                 if (Input.GetTouch(0).phase == TouchPhase.Ended)
                 {
-                   ResetTime();
-                   touchState = 1;
+                    touchState = 1;
+                    ResetTime();
                    
+
                 }
             }
         }
@@ -186,7 +186,7 @@ public class TouchScript : MonoBehaviour
     {
         acumTime = 0;
     }
-    RaycastHit2D[] RaycastObjectsTouched()
+    RaycastHit2D[] RaycastObjectsTouched()// returns array of raycasthit2d 
     {
         var inputPosition = CurrentTouchPosition;
         RaycastHit2D[] objectsHit = Physics2D.RaycastAll(inputPosition, inputPosition, 1f);
@@ -194,13 +194,13 @@ public class TouchScript : MonoBehaviour
 
     }
     //Update is called once per frame
-    void BlankBlockAnimation(int touchState_)// returns array of objects hit
+    void BlankBlockAnimation(int touchState_)
     {
         if (touchState_ != 0)
         {
-            var hit =RaycastObjectsTouched()[0];
             
-            blankBlockAnimator = hit.transform.gameObject.GetComponent<Animator>();
+            
+            blankBlockAnimator = blockHit.transform.gameObject.GetComponent<Animator>();
             if (touchState_ == 1)
             {
 
@@ -236,16 +236,18 @@ public class TouchScript : MonoBehaviour
     {
         if (HasInput)
         {
+            blockHit = RaycastObjectsTouched()[0];
             AccuminlateTime();
             if (touchState == 0 || touchState==1)// check if touch started or it's a tap (not yet anything else)
             {
                 IsTapDragOrPress(); //assign touchState to a value
-                if (isitfirstBlock)
+                if (isitfirstBlock&&touchState==1)
                 {
                     
                     boardScript = GetComponent<BoardManager>();
-                    boardScript.InitialiseList();
-                    boardScript.LayoutMines(10);// TODO add from GUI text
+                    boardScript.InitialiseList(blockHit.transform.gameObject.transform.position.x, blockHit.transform.gameObject.transform.position.y);
+                    boardScript.LayoutMines(blockHit.transform.gameObject);
+                    Debug.Log("layout mines pls");
                     isitfirstBlock = false;
                 }
                 BlankBlockAnimation(touchState);
@@ -253,14 +255,14 @@ public class TouchScript : MonoBehaviour
             
             if (touchState == 2)
             {
-                Debug.Log("im dragging");
+                //Debug.Log("im dragging");
                 DragBoard();
-            }
+            }//drags board
             
         }
         else
         {
-            if (draggingItem) DropItem();// sets draggingitem to false and stops the loop
+            if (draggingItem) DropItem();// sets draggingitem to false
             if (touchState != 0)
             {
                 touchState = 0;

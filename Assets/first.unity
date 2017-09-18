@@ -309,10 +309,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   columns: 8
   rows: 8
-  number: 10
+  mineNumber: 10
   clueTiles: []
   blankTile: {fileID: 1134623476719706, guid: f4d29921826e2ec438566e0ce69fd9d8, type: 2}
   mineTile: {fileID: 1623949818536884, guid: 9e5eb6f2f64e72148987cd44366673aa, type: 2}
+  gridPositions: []
 --- !u!4 &228362886
 Transform:
   m_ObjectHideFlags: 0
