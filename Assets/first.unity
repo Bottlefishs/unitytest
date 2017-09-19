@@ -310,7 +310,16 @@ MonoBehaviour:
   columns: 8
   rows: 8
   mineNumber: 10
-  clueTiles: []
+  clueTiles:
+  - {fileID: 1600914178105730, guid: ff081f8c0aad133419523c5ad81e62e8, type: 2}
+  - {fileID: 1707180369119324, guid: 5dac4b8d1a987554eae185af29b86667, type: 2}
+  - {fileID: 1949005289784200, guid: 7ca5abc74de0d0746b7e6be2707d90dc, type: 2}
+  - {fileID: 1361841735033460, guid: 1a4dd8a6cd292a84e8c6e16967390f5c, type: 2}
+  - {fileID: 1455594104768076, guid: dd408a7c566bc9349b673710989563f2, type: 2}
+  - {fileID: 1239532115580986, guid: 78055774c3696d94398618fbae391612, type: 2}
+  - {fileID: 1615306635386336, guid: 1c9c03671514bdc448746db7e4ccb0a0, type: 2}
+  - {fileID: 1175756661095228, guid: 462d3d601b581c04dad490be1fd7ef92, type: 2}
+  - {fileID: 1300968725028798, guid: 945bc02fb8249734f8cdd60fc634fe87, type: 2}
   blankTile: {fileID: 1134623476719706, guid: f4d29921826e2ec438566e0ce69fd9d8, type: 2}
   mineTile: {fileID: 1623949818536884, guid: 9e5eb6f2f64e72148987cd44366673aa, type: 2}
   gridPositions: []

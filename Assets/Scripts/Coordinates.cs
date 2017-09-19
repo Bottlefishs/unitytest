@@ -4,21 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Coordinates : MonoBehaviour {
-    [Serializable]
-    public class Coordinate
-    {
-        public int xCoordinates;
-        public int yCoordinates;
-
-
-        public Coordinate(int x, int y)
-        {
-            xCoordinates = x;
-            yCoordinates = y;
-        }
-    }
-    public int xCoordinates;
-    public int yCoordinates;
+    public Vector2 coordinates;
     // Use this for initialization
     void Start () {
 		

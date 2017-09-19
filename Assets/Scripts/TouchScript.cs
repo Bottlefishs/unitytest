@@ -167,11 +167,12 @@ public class TouchScript : MonoBehaviour
             {
                 if (Input.GetTouch(0).phase == TouchPhase.Ended)
                 {
-                    touchState = 1;
+                    
                     ResetTime();
                    
 
                 }
+                touchState = 1;
             }
         }
         return touchState;
@@ -236,23 +237,17 @@ public class TouchScript : MonoBehaviour
     {
         if (HasInput)
         {
-            blockHit = RaycastObjectsTouched()[0];
+            if(RaycastObjectsTouched()!=null) blockHit = RaycastObjectsTouched()[0];
+
             AccuminlateTime();
             if (touchState == 0 || touchState==1)// check if touch started or it's a tap (not yet anything else)
             {
                 IsTapDragOrPress(); //assign touchState to a value
-                if (isitfirstBlock&&touchState==1)
-                {
-                    
-                    boardScript = GetComponent<BoardManager>();
-                    boardScript.InitialiseList(blockHit.transform.gameObject.transform.position.x, blockHit.transform.gameObject.transform.position.y);
-                    boardScript.LayoutMines(blockHit.transform.gameObject);
-                    Debug.Log("layout mines pls");
-                    isitfirstBlock = false;
-                }
+
                 BlankBlockAnimation(touchState);
             }
             
+
             if (touchState == 2)
             {
                 //Debug.Log("im dragging");
@@ -263,6 +258,18 @@ public class TouchScript : MonoBehaviour
         else
         {
             if (draggingItem) DropItem();// sets draggingitem to false
+            if (touchState == 1)
+            {
+                if (isitfirstBlock && touchState == 1)//initialise mine field
+                {
+                    Debug.Log("layout mines pls");
+                    boardScript = GetComponent<BoardManager>();
+                    boardScript.InitialiseList(blockHit.transform.gameObject.transform.position.x, blockHit.transform.gameObject.transform.position.y);
+                    boardScript.LayoutMines(blockHit.transform.gameObject);
+                    
+                    isitfirstBlock = false;
+                }
+            }
             if (touchState != 0)
             {
                 touchState = 0;
