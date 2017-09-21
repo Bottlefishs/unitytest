@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 public class Coordinates : MonoBehaviour {
     public Vector2 coordinates;
+
     // Use this for initialization
     void Start () {
 		

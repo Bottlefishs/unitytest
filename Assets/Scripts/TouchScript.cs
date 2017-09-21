@@ -18,6 +18,7 @@ public class TouchScript : MonoBehaviour
     bool isitfirstBlock=true;
     private BoardManager boardScript;
     private RaycastHit2D blockHit;
+    private Animator mineAnimator;
 
     #region VibrateBlackbox
     public static class Vibration
@@ -195,7 +196,7 @@ public class TouchScript : MonoBehaviour
 
     }
     //Update is called once per frame
-    void BlankBlockAnimation(int touchState_)
+    void BlankBlockAnimation(int touchState_)// also has the assignment of whether block can be clicked
     {
         if (touchState_ != 0)
         {
@@ -204,13 +205,6 @@ public class TouchScript : MonoBehaviour
             blankBlockAnimator = blockHit.transform.gameObject.GetComponent<Animator>();
             if (touchState_ == 1)
             {
-
-                //if (isitfirstBlock)
-                //{
-                //    boardScript = GetComponent<BoardManager>();
-                //    boardScript.LayoutMines(10, hit.transform.position);// TODO add from GUI text shouldnt be here anyway
-                //    isitfirstBlock=false;
-                //}
                 blankBlockAnimator.SetBool("TempClick", true);
             }
             else if (touchState_ == 3)
@@ -221,12 +215,15 @@ public class TouchScript : MonoBehaviour
                 {
                     case 3:
                         blankBlockAnimator.SetInteger("HoldClick", 1);
+                        blockHit.transform.gameObject.GetComponent<BlockState>().isBlankFlagOrQuestion = 2;
                         break;
                     case 1:
                         blankBlockAnimator.SetInteger("HoldClick", 2);
+                        blockHit.transform.gameObject.GetComponent<BlockState>().isBlankFlagOrQuestion = 3;
                         break;
                     case 2:
                         blankBlockAnimator.SetInteger("HoldClick", 3);
+                        blockHit.transform.gameObject.GetComponent<BlockState>().isBlankFlagOrQuestion = 1;
                         break;
                 }
                 
@@ -237,14 +234,18 @@ public class TouchScript : MonoBehaviour
     {
         if (HasInput)
         {
-            if(RaycastObjectsTouched()!=null) blockHit = RaycastObjectsTouched()[0];
+            
 
             AccuminlateTime();
             if (touchState == 0 || touchState==1)// check if touch started or it's a tap (not yet anything else)
             {
                 IsTapDragOrPress(); //assign touchState to a value
-
-                BlankBlockAnimation(touchState);
+                if (RaycastObjectsTouched().Length != 0)
+                {
+                    blockHit = RaycastObjectsTouched()[0];
+                    BlankBlockAnimation(touchState);
+                    
+                }
             }
             
 
@@ -260,14 +261,30 @@ public class TouchScript : MonoBehaviour
             if (draggingItem) DropItem();// sets draggingitem to false
             if (touchState == 1)
             {
-                if (isitfirstBlock && touchState == 1)//initialise mine field
+
+                if (blockHit.transform.gameObject.GetComponent<BlockState>().isBlankFlagOrQuestion == 1)
                 {
-                    Debug.Log("layout mines pls");
-                    boardScript = GetComponent<BoardManager>();
-                    boardScript.InitialiseList(blockHit.transform.gameObject.transform.position.x, blockHit.transform.gameObject.transform.position.y);
-                    boardScript.LayoutMines(blockHit.transform.gameObject);
-                    
-                    isitfirstBlock = false;
+                    if (isitfirstBlock)//initialise mine field when  hand leaves phone assigns boardscript
+                    {
+                        Debug.Log("layout mines pls");
+                        boardScript = GetComponent<BoardManager>();
+                        boardScript.InitialiseList(blockHit.transform.gameObject);
+                        boardScript.LayoutMines(blockHit.transform.gameObject);
+
+                        isitfirstBlock = false;
+                    }
+                    blockHit.transform.gameObject.GetComponent<Renderer>().enabled = false;
+                    if (boardScript.IsBlockHitZero(blockHit.transform.gameObject.GetComponent<Coordinates>().coordinates))
+                    {
+                        boardScript.ZerosConnected(blockHit.transform.gameObject.GetComponent<Coordinates>().coordinates);
+                        boardScript.WipeZeroList();
+                    }
+                    if (boardScript.IsBlockHitMine(blockHit.transform.gameObject.GetComponent<Coordinates>().coordinates))
+                    {
+                        Vector2 minePosition = blockHit.transform.gameObject.GetComponent<Coordinates>().coordinates;
+                        mineAnimator = boardScript.bottomGridObjects[(int)minePosition.x, (int)minePosition.y].GetComponent<Animator>();
+                        mineAnimator.SetBool("SteppedOnMine", true);
+                    }
                 }
             }
             if (touchState != 0)

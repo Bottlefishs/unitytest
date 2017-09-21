@@ -63,7 +63,7 @@ public class BoardManager : MonoBehaviour
 
     }
 
-    void TopSetCoordinates(GameObject instance, int xPos, int yPos)
+    void TopSetCoordinates(GameObject instance, int xPos, int yPos)//stores gameobject into topgridobjects
     {
         instance.GetComponent<Coordinates>().coordinates.x=xPos;
         instance.GetComponent<Coordinates>().coordinates.y = yPos;
@@ -75,7 +75,7 @@ public class BoardManager : MonoBehaviour
         instance.GetComponent<Coordinates>().coordinates.y = yPos;
         bottomGridObjects[xPos, yPos] = instance;
     }
-    void AddOneAroundMine(int xPos, int yPos)
+    void AddOneAroundMine(int xPos, int yPos)//in clue numbers
     {
         for (int x = xPos - 1; x <= xPos + 1; x++)  //does it 3 times i think       //not too sure what's going on here
         {
@@ -105,16 +105,16 @@ public class BoardManager : MonoBehaviour
             }
         }
     }
-    public void InitialiseList(float xPos, float yPos) //skipping blocks around the block that was hit
+    public void InitialiseList(GameObject block) //skipping blocks around the block that was hit
     {
         //List<Vector3> gridPositions = new List<Vector3>();
         List<Vector3> skipPositions = new List<Vector3>();
         //float maxX = boardHolder.position.x + columns * tileSize.x;
-        float minX = boardHolder.position.x;
+        //float minX = boardHolder.position.x;
         //float maxY = boardHolder.position.y + rows * tileSize.y;
-        float minY = boardHolder.position.y;
-        int xIntPos = (int)Math.Round((xPos - minX)/tileSize.x);
-        int yIntPos = (int)Math.Round((yPos - minY) / tileSize.y);
+        //float minY = boardHolder.position.y;
+        int xIntPos = (int)block.GetComponent<Coordinates>().coordinates.x;
+        int yIntPos = (int)block.GetComponent<Coordinates>().coordinates.y;
         for (int x = xIntPos -1; x<=xIntPos+1; x++)  //does it 3 times i think       //not too sure what's going on here
         {
             if (x>=0&& x<columns)
@@ -198,11 +198,113 @@ public class BoardManager : MonoBehaviour
         gridPositions.RemoveAt(randomIndex);
         return randomPosition;
     }
+    public List<Vector2> ZeroPositionsAround(GameObject block)// where you clicked and the clues around the click pass in coordinates of touch
+    {
+        List<Vector2> zeroPositions = new List<Vector2>();
+        int xIntPos = (int)block.GetComponent<Coordinates>().coordinates.x;
+        int yIntPos = (int)block.GetComponent<Coordinates>().coordinates.y;
+        for (int x = xIntPos - 1; x <= xIntPos + 1; x += 2)  //does it 3 times i think  
+        {
+            if (x >= 0 && x < columns)
+            {
+                if (clueNumbers[x, yIntPos] == 0 )
+                {
+                    zeroPositions.Add(new Vector2(x, yIntPos));
+                }
+            }
+        }
+        for (int y = yIntPos - 1; y <= yIntPos + 1; y += 2)
+        {
+            if (y >= 0 && y < rows)//includes min and max
+            {
+                if (clueNumbers[xIntPos, y] == 0 )
+                {
+                    zeroPositions.Add(new Vector2(xIntPos, y));
+                }
+            }
+        }
+        return zeroPositions;
+    }
+    public List<Vector2> ZeroPositionsAround(Vector2 currentZeroPosition)// TODO add these in the main loop // where you clicked and the clues around the click pass in coordinates of touch
+    {                                                                                                                   //and pass in the last iterated vector 2
+        List<Vector2> zeroPositions = new List<Vector2>();
+        int xIntPos = (int)currentZeroPosition.x;
+        int yIntPos = (int)currentZeroPosition.y;
 
+
+        for (int x = xIntPos - 1; x <= xIntPos + 1; x+=2)  //does it 3 times i think  
+        {
+            if (x >= 0 && x < columns)
+            {
+                if (clueNumbers[x, yIntPos] == 0)
+                {
+                    zeroPositions.Add(new Vector2(x, yIntPos));
+                }
+            }
+        }
+        for (int y = yIntPos - 1; y <= yIntPos + 1; y+=2)
+        {
+            if (y >= 0 && y < rows)//includes min and max
+            {
+                if (clueNumbers[xIntPos, y] == 0)
+                {
+                    zeroPositions.Add(new Vector2(xIntPos, y));
+                }
+            }
+        }
+
+        return zeroPositions;
+    }
+    List<Vector2> totalZeroPosition = new List<Vector2>();
+    public void ZerosConnected(Vector2 blockPosition)
+    {
+            List<Vector2> zeros = ZeroPositionsAround(blockPosition);
+            
+            if (zeros.Count>0)
+            {
+                foreach (Vector2 zero in zeros)
+                {
+                    if(!totalZeroPosition.Contains(zero))
+                    {
+                    Debug.Log("hello");
+                    totalZeroPosition.Add(zero);
+                    topGridObjects[(int)zero.x,(int)zero.y].GetComponent<Renderer>().enabled = false;
+                    ZerosConnected(zero);
+
+                    }
+                }
+            }
+
+    }
+    public void WipeZeroList()
+    {
+        List<Vector2> totalZeroPosition = new List<Vector2>();
+    }
+    public bool IsBlockHitZero(Vector2 blockPosition)
+    {
+        if (clueNumbers[(int)blockPosition.x, (int)blockPosition.y] == 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public bool IsBlockHitMine(Vector2 blockPosition)
+    {
+        if (bottomGridObjects[(int)blockPosition.x, (int)blockPosition.y].tag == "Mine")
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
     public void SetupScene()
     {
         InitialiseList();
-        //TODO make it so it only initialises on the first tap and have to 
         BoardSetup();
         
 
