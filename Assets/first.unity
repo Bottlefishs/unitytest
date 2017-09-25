@@ -323,6 +323,7 @@ MonoBehaviour:
   blankTile: {fileID: 1134623476719706, guid: f4d29921826e2ec438566e0ce69fd9d8, type: 2}
   mineTile: {fileID: 1623949818536884, guid: 9e5eb6f2f64e72148987cd44366673aa, type: 2}
   gridPositions: []
+  totalZeroPosition: []
 --- !u!4 &228362886
 Transform:
   m_ObjectHideFlags: 0
@@ -1341,7 +1342,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1586868031
 MonoBehaviour:
   m_ObjectHideFlags: 0

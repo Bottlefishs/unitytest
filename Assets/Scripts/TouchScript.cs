@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public class TouchScript : MonoBehaviour
 {
@@ -15,10 +15,12 @@ public class TouchScript : MonoBehaviour
     float acumTime;
     float holdTime;
     float moveThreshold = 2f;
-    bool isitfirstBlock=true;
+    bool isitfirstBlock = true;
     private BoardManager boardScript;
     private RaycastHit2D blockHit;
     private Animator mineAnimator;
+    private bool gameEnded = false;
+    private bool gameWon;
 
     #region VibrateBlackbox
     public static class Vibration
@@ -100,7 +102,7 @@ public class TouchScript : MonoBehaviour
         }
     }
 
-    private bool HasInput
+    private bool hasInput
     {
         get
         {
@@ -145,18 +147,18 @@ public class TouchScript : MonoBehaviour
     }
 
 
-  
+
     int IsTapDragOrPress()
     {
         // once a touch is determined as tap drag or press it cant be anything else again
-        holdTime = 0.4f;
+        holdTime = 0.5f;
         firstTouch = Input.GetTouch(0);
 
-        if (firstTouch.phase == TouchPhase.Moved&& Mathf.Abs(firstTouch.deltaPosition.x) > moveThreshold && Mathf.Abs(firstTouch.deltaPosition.y) > moveThreshold)
+        if (firstTouch.phase == TouchPhase.Moved && Mathf.Abs(firstTouch.deltaPosition.x) > moveThreshold && Mathf.Abs(firstTouch.deltaPosition.y) > moveThreshold)
         {
             //Debug.Log("im dragging");
             touchState = 2;
-            
+
         }
         else
         {
@@ -168,12 +170,12 @@ public class TouchScript : MonoBehaviour
             {
                 if (Input.GetTouch(0).phase == TouchPhase.Ended)
                 {
-                    
+                    touchState = 1;
                     ResetTime();
-                   
+
 
                 }
-                touchState = 1;
+
             }
         }
         return touchState;
@@ -200,8 +202,8 @@ public class TouchScript : MonoBehaviour
     {
         if (touchState_ != 0)
         {
-            
-            
+
+
             blankBlockAnimator = blockHit.transform.gameObject.GetComponent<Animator>();
             if (touchState_ == 1)
             {
@@ -226,74 +228,106 @@ public class TouchScript : MonoBehaviour
                         blockHit.transform.gameObject.GetComponent<BlockState>().isBlankFlagOrQuestion = 1;
                         break;
                 }
-                
+
             }
         }
     }
     void Update()
     {
-        if (HasInput)
+        if (blockHit.transform.gameObject.tag == "reset")
         {
-            
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        if (!gameEnded) //checks if game has ended
+        {
 
-            AccuminlateTime();
-            if (touchState == 0 || touchState==1)// check if touch started or it's a tap (not yet anything else)
+            if (hasInput)
             {
-                IsTapDragOrPress(); //assign touchState to a value
-                if (RaycastObjectsTouched().Length != 0)
+
+
+                AccuminlateTime();
+                if (touchState == 0 || touchState == 1)// check if touch started or it's a tap (not yet anything else)
                 {
-                    blockHit = RaycastObjectsTouched()[0];
-                    BlankBlockAnimation(touchState);
-                    
-                }
-            }
-            
+                    IsTapDragOrPress(); //assign touchState to a value
+                    if (RaycastObjectsTouched().Length != 0)
+                    {
+                        blockHit = RaycastObjectsTouched()[0];
 
-            if (touchState == 2)
+                        BlankBlockAnimation(touchState);
+
+                    }
+                }
+
+
+                if (touchState == 2)//drags if a tap or a press turns into a drag
+                {
+                    //Debug.Log("im dragging");
+                    DragBoard();
+                }//drags board
+
+            }
+            else
             {
-                //Debug.Log("im dragging");
-                DragBoard();
-            }//drags board
-            
+                if (draggingItem) DropItem();// sets draggingitem to false
+                if (touchState == 1)
+                {
+
+                    if (blockHit.transform.gameObject.GetComponent<BlockState>().isBlankFlagOrQuestion == 1)
+                    {
+                        if (isitfirstBlock)//initialise mine field when  hand leaves phone assigns boardscript
+                        {
+                            Debug.Log("layout mines pls");
+                            boardScript = GetComponent<BoardManager>();
+                            boardScript.InitialiseList(blockHit.transform.gameObject);
+                            boardScript.LayoutMines(blockHit.transform.gameObject);
+
+                            isitfirstBlock = false; // only layout mine once
+                        }
+                        blockHit.transform.gameObject.GetComponent<Renderer>().enabled = false;
+                        if (boardScript.IsBlockHitZero(blockHit.transform.gameObject.GetComponent<Coordinates>().coordinates)) // recursion loop for zeroes
+                        {
+                            boardScript.ZerosConnected(blockHit.transform.gameObject.GetComponent<Coordinates>().coordinates);
+                            boardScript.ShowCluesAroundZeros();
+                            boardScript.WipeZeroList();
+                        }
+                        if (boardScript.IsBlockHitMine(blockHit.transform.gameObject.GetComponent<Coordinates>().coordinates))// make mine red and ends game
+                        {
+                            Vector2 minePosition = blockHit.transform.gameObject.GetComponent<Coordinates>().coordinates;
+                            mineAnimator = boardScript.bottomGridObjects[(int)minePosition.x, (int)minePosition.y].GetComponent<Animator>();
+                            mineAnimator.SetBool("SteppedOnMine", true);
+                            gameWon = false;//game lost
+                            gameEnded = true;
+                        }
+                    }
+                }
+                if (touchState != 0)
+                {
+                    touchState = 0;
+                    blankBlockAnimator.SetBool("TempClick", false);
+                }
+
+                if (acumTime != 0) ResetTime();
+            }
         }
         else
         {
-            if (draggingItem) DropItem();// sets draggingitem to false
-            if (touchState == 1)
+            if (hasInput)
+            {
+                DragBoard();
+            }
+            else
+            {
+                if (draggingItem) DropItem();
+            }
+            if (gameWon)// add end game here
             {
 
-                if (blockHit.transform.gameObject.GetComponent<BlockState>().isBlankFlagOrQuestion == 1)
-                {
-                    if (isitfirstBlock)//initialise mine field when  hand leaves phone assigns boardscript
-                    {
-                        Debug.Log("layout mines pls");
-                        boardScript = GetComponent<BoardManager>();
-                        boardScript.InitialiseList(blockHit.transform.gameObject);
-                        boardScript.LayoutMines(blockHit.transform.gameObject);
-
-                        isitfirstBlock = false;
-                    }
-                    blockHit.transform.gameObject.GetComponent<Renderer>().enabled = false;
-                    if (boardScript.IsBlockHitZero(blockHit.transform.gameObject.GetComponent<Coordinates>().coordinates))
-                    {
-                        boardScript.ZerosConnected(blockHit.transform.gameObject.GetComponent<Coordinates>().coordinates);
-                        boardScript.WipeZeroList();
-                    }
-                    if (boardScript.IsBlockHitMine(blockHit.transform.gameObject.GetComponent<Coordinates>().coordinates))
-                    {
-                        Vector2 minePosition = blockHit.transform.gameObject.GetComponent<Coordinates>().coordinates;
-                        mineAnimator = boardScript.bottomGridObjects[(int)minePosition.x, (int)minePosition.y].GetComponent<Animator>();
-                        mineAnimator.SetBool("SteppedOnMine", true);
-                    }
-                }
             }
-            if (touchState != 0)
+            else
             {
-                touchState = 0;
-                blankBlockAnimator.SetBool("TempClick", false);
+
             }
-                
-            if (acumTime!=0)ResetTime();
+
         }
     }
 }
