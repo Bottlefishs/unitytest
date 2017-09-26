@@ -54,9 +54,7 @@ public class BoardManager : MonoBehaviour
     }
     void Awake()//add GUI values in here
     {
-        topGridObjects = new GameObject[columns, rows];
-        bottomGridObjects = new GameObject[columns, rows];
-        clueNumbers = new int[columns, rows];
+
     }
     // Use this for initialization
     void Start()
@@ -108,7 +106,6 @@ public class BoardManager : MonoBehaviour
     }
     public void InitialiseList(GameObject block) //skipping blocks around the block that was hit
     {
-        List<Vector3> skipPositions = new List<Vector3>();
         int xIntPos = (int)block.GetComponent<Coordinates>().coordinates.x;
         int yIntPos = (int)block.GetComponent<Coordinates>().coordinates.y;
         for (int x = xIntPos -1; x<=xIntPos+1; x++)  //does it 3 times i think       //not too sure what's going on here
@@ -127,23 +124,12 @@ public class BoardManager : MonoBehaviour
                 }
             }
         }
-        //for (int x = 0; x < columns; x++)
-        //{
-        //
-        //    for (int y = 0; y < rows; y++)
-        //    {
-        //        //Vector3 current = new Vector3(x * tileSize.x+boardHolder.position.x, y * tileSize.y + boardHolder.position.y, 0f);
-        //        Vector3 current = new Vector3(x, y, 0f);
-        //        if (skipPositions.Contains(current))
-        //        {
-        //            gridPositions.Remove(current);// removes 9 positions if not at the edge
-        //        }
-        //    }
-        //}
-
     }
     void BoardSetup() //board is the blank blocks
     {
+        topGridObjects = new GameObject[columns, rows];
+        bottomGridObjects = new GameObject[columns, rows];
+        clueNumbers = new int[columns, rows];
         Vector3 currentPosition;
         boardHolder = GameObject.Find("Board").transform;
         for (int i = 0; i < gridPositions.Count; i++)
@@ -273,7 +259,7 @@ public class BoardManager : MonoBehaviour
             }
 
     }
-    public void ShowCluesAroundZeros()//TODO fix this when you get more sleep
+    public void ShowCluesAroundZeros()
     {
         List<Vector2> tempZeroPositions = new List<Vector2>(totalZeroPosition);
         foreach (Vector2 zero in tempZeroPositions)

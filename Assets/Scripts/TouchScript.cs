@@ -234,10 +234,7 @@ public class TouchScript : MonoBehaviour
     }
     void Update()
     {
-        if (blockHit.transform.gameObject.tag == "reset")
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
+        
         if (!gameEnded) //checks if game has ended
         {
 
@@ -253,6 +250,10 @@ public class TouchScript : MonoBehaviour
                     {
                         blockHit = RaycastObjectsTouched()[0];
 
+                        if (blockHit.transform.gameObject.tag == "reset")//reset game
+                        {
+                            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                        }
                         BlankBlockAnimation(touchState);
 
                     }
@@ -314,7 +315,16 @@ public class TouchScript : MonoBehaviour
             if (hasInput)
             {
                 DragBoard();
-            }
+                if (RaycastObjectsTouched().Length != 0)
+                {
+                    blockHit = RaycastObjectsTouched()[0];
+
+                    if (blockHit.transform.gameObject.tag == "reset")//reset game
+                    {
+                        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                    }
+                }
+                }
             else
             {
                 if (draggingItem) DropItem();

@@ -5,9 +5,9 @@ using System.Collections.Generic;       //Allows us to use Lists.
 
 public class GameManager : MonoBehaviour
 {
-
+    private BoardManager boardScript;
     public static GameManager instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
-    private BoardManager boardScript;                       //Store a reference to our BoardManager which will set up the level.
+                           //Store a reference to our BoardManager which will set up the level.
 
     //Awake is always called before any Start functions
     void Awake()
@@ -31,12 +31,13 @@ public class GameManager : MonoBehaviour
         boardScript = GetComponent<BoardManager>();
 
         //Call the InitGame function to initialize the first level 
-        InitGame();
+        //InitGame();
     }
 
     //Initializes the game for each level.
-    void InitGame()
+    public void InitGame()
     {
+
         //Call the SetupScene function of the BoardManager script, pass it current level number.
         boardScript.SetupScene();
 
